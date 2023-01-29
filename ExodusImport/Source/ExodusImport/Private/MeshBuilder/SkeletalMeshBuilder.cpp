@@ -623,11 +623,15 @@ void SkeletalMeshBuilder::setupSkeletalMesh(USkeletalMesh *skelMesh, const JsonM
 	Hmm.
 	*/
 
+	skelMesh->AddLODInfo();
+	skelMesh->GetRefBasesInvMatrix().Empty(jsonSkel->bones.Num());
+	skelMesh->GetRefBasesInvMatrix().AddUninitialized(jsonSkel->bones.Num());
+
 	registerPreviewMesh(skelMesh->Skeleton, skelMesh, jsonMesh);
 
 	skelMesh->PostEditChange();
 	skelMesh->MarkPackageDirty();
-	skelMesh->PostLoad();
+	skelMesh->ConditionalPostLoad();
 }
 
 void SkeletalMeshBuildData::processBlendShapes(USkeletalMesh *skelMesh, const JsonMesh &jsonMesh){
