@@ -115,8 +115,11 @@ void TestSkelMeshFiller::buildSkeletalMesh(FSkeletalMeshImportData& importData){
 	auto lod = skelMesh->GetLODInfo(lodIndex);
 	check(lod != nullptr);
 
-	auto meshBuildModule = FModuleManager::Get().LoadModuleChecked<IMeshBuilderModule>("MeshBuilder");
-	auto success = meshBuildModule.BuildSkeletalMesh(skelMesh, lodIndex, false);
+	//auto meshBuildModule = FModuleManager::LoadModuleChecked<IMeshBuilderModule>("MeshBuilder");
+	IMeshBuilderModule& meshBuildModule = IMeshBuilderModule::GetForRunningPlatform();
+	auto skeletalMeshBuildParams = FSkeletalMeshBuildParameters(skelMesh, nullptr, lodIndex, false);
+
+	auto success = meshBuildModule.BuildSkeletalMesh(skeletalMeshBuildParams);
 }
 
 void TestSkelMeshFiller::addLods(){
@@ -141,16 +144,16 @@ void TestSkelMeshFiller::createBones(FSkeletalMeshImportData& importData){
 
 	SkeletalMeshImportData::FBone rawBone1, rawBone2, rawBone3;
 
-	FTransform boneTransform1, boneTransform2, boneTransform3;
-	boneTransform1.SetFromMatrix(FMatrix::Identity);
-	boneTransform1.SetLocation(FVector(0.0f, 0.0f, 0.0f));
-	boneTransform2.SetFromMatrix(FMatrix::Identity);
-	boneTransform2.SetLocation(FVector(0.0f, 100.0f, 100.0f));
-	boneTransform3.SetFromMatrix(FMatrix::Identity);
+	FTransform3f boneTransform1, boneTransform2, boneTransform3;
+	boneTransform1.SetFromMatrix(FMatrix44f::Identity);
+	boneTransform1.SetLocation(FVector3f(0.0f, 0.0f, 0.0f));
+	boneTransform2.SetFromMatrix(FMatrix44f::Identity);
+	boneTransform2.SetLocation(FVector3f(0.0f, 100.0f, 100.0f));
+	boneTransform3.SetFromMatrix(FMatrix44f::Identity);
 
 	///So, locations are local.
 	//boneTransform3.SetLocation(FVector(0.0f, -100.0f, 100.0f));
-	boneTransform3.SetLocation(FVector(0.0f, -200.0f, 0.0f));
+	boneTransform3.SetLocation(FVector3f(0.0f, -200.0f, 0.0f));
 
 	rawBone1.Name = boneName1;
 	rawBone1.BonePos.Transform = boneTransform1;
@@ -175,9 +178,9 @@ void TestSkelMeshFiller::createBones(FSkeletalMeshImportData& importData){
 		auto boneInfo2 = FMeshBoneInfo(FName(*boneName2), boneName2, 0);
 		auto boneInfo3 = FMeshBoneInfo(FName(*boneName3), boneName3, 1);
 
-		refSkelModifier.Add(boneInfo1, rawBone1.BonePos.Transform);//boneTransform1);
-		refSkelModifier.Add(boneInfo2, rawBone2.BonePos.Transform);//boneTransform2);
-		refSkelModifier.Add(boneInfo3, rawBone3.BonePos.Transform);//boneTransform3);
+		refSkelModifier.Add(boneInfo1, (FTransform)rawBone1.BonePos.Transform);//boneTransform1);
+		refSkelModifier.Add(boneInfo2, (FTransform)rawBone2.BonePos.Transform);//boneTransform2);
+		refSkelModifier.Add(boneInfo3, (FTransform)rawBone3.BonePos.Transform);//boneTransform3);
 	}
 }
 
@@ -195,26 +198,26 @@ void TestSkelMeshFiller::buildGeometry(FSkeletalMeshImportData& importData){
 
 	originalDeltas.Empty();
 
-	TArray<FVector2D> uvs;
-	meshPoints.Add(FVector(0.0f, -100.0f, 100.0f));
-	uvs.Add(FVector2D(0.0f, 1.0f));
-	originalDeltas.Add(FMorphTargetDelta{FVector(0.0f, -100.0f, 100.0f), FVector(0.0f, 0.0f, 0.0f), 0});
+	TArray<FVector2f> uvs;
+	meshPoints.Add(FVector3f(0.0f, -100.0f, 100.0f));
+	uvs.Add(FVector2f(0.0f, 1.0f));
+	originalDeltas.Add(FMorphTargetDelta{FVector3f(0.0f, -100.0f, 100.0f), FVector3f(0.0f, 0.0f, 0.0f), 0});
 
-	meshPoints.Add(FVector(0.0f, 100.0f, 100.0f));
-	uvs.Add(FVector2D(1.0f, 1.0f));
-	originalDeltas.Add(FMorphTargetDelta{FVector(0.0f, 100.0f, 100.0f), FVector(0.0f, 0.0f, 0.0f), 1});
+	meshPoints.Add(FVector3f(0.0f, 100.0f, 100.0f));
+	uvs.Add(FVector2f(1.0f, 1.0f));
+	originalDeltas.Add(FMorphTargetDelta{FVector3f(0.0f, 100.0f, 100.0f), FVector3f(0.0f, 0.0f, 0.0f), 1});
 
-	meshPoints.Add(FVector(0.0f, -100.0f, -100.0f));
-	uvs.Add(FVector2D(0.0f, 0.0f));
-	originalDeltas.Add(FMorphTargetDelta{FVector(0.0f, -100.0f, -100.0f), FVector(0.0f, 0.0f, 0.0f), 2});
+	meshPoints.Add(FVector3f(0.0f, -100.0f, -100.0f));
+	uvs.Add(FVector2f(0.0f, 0.0f));
+	originalDeltas.Add(FMorphTargetDelta{FVector3f(0.0f, -100.0f, -100.0f), FVector3f(0.0f, 0.0f, 0.0f), 2});
 
-	meshPoints.Add(FVector(0.0f, 100.0f, -100.0f));
-	uvs.Add(FVector2D(1.0f, 0.0f));
-	originalDeltas.Add(FMorphTargetDelta{FVector(0.0f, 100.0f, -100.0f), FVector(0.0f, 0.0f, 0.0f), 3});
+	meshPoints.Add(FVector3f(0.0f, 100.0f, -100.0f));
+	uvs.Add(FVector2f(1.0f, 0.0f));
+	originalDeltas.Add(FMorphTargetDelta{FVector3f(0.0f, 100.0f, -100.0f), FVector3f(0.0f, 0.0f, 0.0f), 3});
 
-	FVector norm(-1.0f, 0.0f, 0.0f);
-	FVector tanU(0.0f, 1.0f, 0.0f);
-	FVector tanV(0.0f, 0.0f, 1.0f);
+	FVector3f norm(-1.0f, 0.0f, 0.0f);
+	FVector3f tanU(0.0f, 1.0f, 0.0f);
+	FVector3f tanV(0.0f, 0.0f, 1.0f);
 	IntArray indexes = {
 		0, 2, 1, 2, 3, 1, 0, 1, 2, 2, 1, 3
 	};

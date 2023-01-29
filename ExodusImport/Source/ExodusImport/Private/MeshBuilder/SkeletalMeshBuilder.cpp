@@ -122,21 +122,21 @@ void SkeletalMeshBuildData::processWedgeData(const JsonMesh &jsonMesh){
 					dstWedge.Color = getIdxColor(jsonMesh.colors, srcVertIdx);
 
 				if (numTexCoords >= 1)
-					dstWedge.UVs[0] = unityUvToUnreal(getIdxVector2(jsonMesh.uv0, srcVertIdx));
+					dstWedge.UVs[0] = unityUvToUnrealf(getIdxVector2(jsonMesh.uv0, srcVertIdx));
 				if (numTexCoords >= 2)
-					dstWedge.UVs[1] = unityUvToUnreal(getIdxVector2(jsonMesh.uv1, srcVertIdx));
+					dstWedge.UVs[1] = unityUvToUnrealf(getIdxVector2(jsonMesh.uv1, srcVertIdx));
 				if (numTexCoords >= 3)
-					dstWedge.UVs[2] = unityUvToUnreal(getIdxVector2(jsonMesh.uv2, srcVertIdx));
+					dstWedge.UVs[2] = unityUvToUnrealf(getIdxVector2(jsonMesh.uv2, srcVertIdx));
 				if (numTexCoords >= 4)
-					dstWedge.UVs[3] = unityUvToUnreal(getIdxVector2(jsonMesh.uv3, srcVertIdx));
+					dstWedge.UVs[3] = unityUvToUnrealf(getIdxVector2(jsonMesh.uv3, srcVertIdx));
 
 				processTangent(srcVertIdx, jsonMesh.normals, jsonMesh.tangents, hasNormals, hasTangents, 
 					[&](const auto &norm){
-						dstFace.TangentZ[dstFaceIdx] = norm;
+						dstFace.TangentZ[dstFaceIdx] = (FVector3f)norm;
 					},
 					[&](const auto &tanU, const auto &tanV){
-						dstFace.TangentX[dstFaceIdx] = tanU;
-						dstFace.TangentY[dstFaceIdx] = tanV;
+						dstFace.TangentX[dstFaceIdx] = (FVector3f)tanU;
+						dstFace.TangentY[dstFaceIdx] = (FVector3f)tanV;
 					}
 				);
 
@@ -172,7 +172,7 @@ void SkeletalMeshBuildData::buildSkeletalMesh(FSkeletalMeshLODModel &lodModel, c
 	auto skeletonName = FString{};
 	meshUtils.BuildSkeletalMesh(lodModel,
 		skeletonName, refSkeleton,
-		meshInfluences, meshWedges, meshFaces, meshPoints,
+		meshInfluences, meshWedges, meshFaces, (TArray<FVector3f>)meshPoints,
 		pointToOriginalMap, buildOptions, &buildWarnMessages, &buildWarnNames);
 #else
 	meshUtils.BuildSkeletalMesh(lodModel,
@@ -663,8 +663,8 @@ void SkeletalMeshBuildData::processBlendShapes(USkeletalMesh *skelMesh, const Js
 				auto unityDeltaPos = getIdxVector3(blendFrame.deltaVerts, origVertIdx);
 				auto unityDeltaNorm = getIdxVector3(blendFrame.deltaNormals, origVertIdx);
 
-				dstDelta.PositionDelta = unityPosToUe(unityDeltaPos);
-				dstDelta.TangentZDelta = unityVecToUe(unityDeltaNorm);
+				dstDelta.PositionDelta = unityPosToUef(unityDeltaPos);
+				dstDelta.TangentZDelta = unityVecToUef(unityDeltaNorm);
 			}
 			//lodModel.MeshToImportVertexMap
 			//UE_LOG(JsonLog, Log, TEXT("Printing original vertices. Total number: %d"), lodModel.RawPointIndices.Nu

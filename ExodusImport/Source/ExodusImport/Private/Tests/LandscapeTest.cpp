@@ -296,7 +296,8 @@ UMaterial* LandscapeTest::createLandscapeMaterial(const TArray<FString> &names){
 		curTarget.BlendType = LB_WeightBlend;
 		curTarget.LayerInput.Expression = colorExpr;
 	}
-	material->BaseColor.Expression = blendExpr;
+	//material->BaseColor.Expression = blendExpr;
+	material->GetEditorOnlyData()->BaseColor.Expression = blendExpr;
 
 	arrangeMaterialNodesAsTree(material);
 

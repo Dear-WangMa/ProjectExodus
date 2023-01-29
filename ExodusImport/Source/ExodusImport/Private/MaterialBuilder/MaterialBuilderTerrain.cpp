@@ -215,7 +215,8 @@ void MaterialBuilder::buildTerrainMaterial(UMaterial* material,
 			}
 		}, TEXT("Color")
 	);
-	material->BaseColor.Expression = colorBlendExpr;
+	//material->BaseColor.Expression = colorBlendExpr;
+	material->GetEditorOnlyData()->BaseColor.Expression = colorBlendExpr;
 
 	if (needNormalBlend){
 		auto* normBlendExpr = createLayerBlending(material, needNormalBlend, terrData,
@@ -234,7 +235,8 @@ void MaterialBuilder::buildTerrainMaterial(UMaterial* material,
 				}
 			}, TEXT("Normals")
 		);
-		material->Normal.Expression = normBlendExpr;
+		//material->Normal.Expression = normBlendExpr;
+		material->GetEditorOnlyData()->Normal.Expression = normBlendExpr;
 	}
 
 	auto metallicBlendExpr = createLayerBlending(material, needMetallicBlend, terrData,
@@ -244,7 +246,8 @@ void MaterialBuilder::buildTerrainMaterial(UMaterial* material,
 			return result;
 		}, TEXT("Metallic")
 	);
-	material->Metallic.Expression = metallicBlendExpr;
+	//material->Metallic.Expression = metallicBlendExpr;
+	material->GetEditorOnlyData()->Metallic.Expression = metallicBlendExpr;
 
 	auto roughnessExpr = createLayerBlending(material, needSmoothnessBlend, terrData,
 		[&](UMaterial* mat, int layerIndex, const JsonSplatPrototype& srcSplat) -> UMaterialExpression*{
@@ -254,7 +257,8 @@ void MaterialBuilder::buildTerrainMaterial(UMaterial* material,
 		}, TEXT("Smoothness/Roughness")
 	);
 	//auto smoothnessBlend
-	material->Roughness.Expression = roughnessExpr;
+	//material->Roughness.Expression = roughnessExpr;
+	material->GetEditorOnlyData()->Roughness.Expression = roughnessExpr;
 
 	createDetailControl(material, terrainBuilder);
 
@@ -273,7 +277,8 @@ void MaterialBuilder::buildTerrainMaterial(UMaterial* material,
 		//statSwitch->A.Expression = 
 		statSwitch->B.Expression = constExpr;
 
-		material->OpacityMask.Expression = statSwitch;
+		//material->OpacityMask.Expression = statSwitch;
+		material->GetEditorOnlyData()->OpacityMask.Expression = statSwitch;
 	//}
 
 	//no specular

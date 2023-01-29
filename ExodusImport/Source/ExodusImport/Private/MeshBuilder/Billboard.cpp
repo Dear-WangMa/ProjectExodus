@@ -39,12 +39,12 @@ void MeshBuilder::generateBillboardMesh(UStaticMesh *staticMesh, UMaterialInterf
 
 		auto addIdx = [&](int32 idx) -> void{
 			rawMesh.WedgeIndices.Add(idx);
-			rawMesh.WedgeTangentZ.Add(normals[idx]);
-			rawMesh.WedgeTexCoords[0].Add(uvs[idx]);
+			rawMesh.WedgeTangentZ.Add((FVector3f)normals[idx]);
+			rawMesh.WedgeTexCoords[0].Add((FVector2f)uvs[idx]);
 		};
 
 		for(auto cur: verts){
-			rawMesh.VertexPositions.Add(cur);
+			rawMesh.VertexPositions.Add((FVector3f)cur);
 		}
 
 		for(auto idx: indices){
@@ -66,8 +66,8 @@ void MeshBuilder::generateBillboardMesh(UStaticMesh *staticMesh, UMaterialInterf
 
 	generateStaticMesh(staticMesh, builderFunc, nullptr, 
 		[&](UStaticMesh* mesh, FStaticMeshSourceModel &model){
-			mesh->StaticMaterials.Empty();
-			mesh->StaticMaterials.Add(billboardMaterial);
+			mesh->GetStaticMaterials().Empty();
+			mesh->GetStaticMaterials().Add(billboardMaterial);
 
 			model.BuildSettings.bRecomputeNormals = false;
 			model.BuildSettings.bRecomputeTangents = true;

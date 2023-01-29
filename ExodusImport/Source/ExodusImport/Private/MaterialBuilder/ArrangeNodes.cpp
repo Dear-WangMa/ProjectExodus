@@ -3,13 +3,13 @@
 
 void MaterialBuilder::arrangeNodesGrid(UMaterial* material, const JsonMaterial &jsonMat, 
 		const MaterialFingerprint &fingerprint, MaterialBuildData &buildData){
-	auto numExpressions = material->Expressions.Num();
+	auto numExpressions = material->GetExpressions().Num();
 	int expressionRows = (int)(sqrtf((float)numExpressions))+1;
 	if (expressionRows == 0)
 		return;
 
 	for (int i = 0; i < numExpressions; i++){
-		auto cur = material->Expressions[i];
+		auto cur = material->GetExpressions()[i];
 		auto row = i / expressionRows;
 		auto col = i % expressionRows;
 

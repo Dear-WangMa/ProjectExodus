@@ -4,8 +4,9 @@
 #include "Runtime/Engine/Classes/Animation/Skeleton.h"
 
 void addRawTrackBoneKey(FRawAnimSequenceTrack &outTrack, const JsonTransformKey &key){
-	auto unrealMatrix = key.local.getUnrealTransform();
-	FTransform transform;
+	auto unrealMatrix = (FMatrix44f)key.local.getUnrealTransform();
+	FTransform3f transform;
+	//TTransform<float> transform;
 	transform.SetFromMatrix(unrealMatrix);
 
 	outTrack.PosKeys.Add(transform.GetLocation());
@@ -15,7 +16,7 @@ void addRawTrackBoneKey(FRawAnimSequenceTrack &outTrack, const JsonTransformKey 
 
 void AnimationBuilder::buildAnimation(UAnimSequence *animSeq, USkeleton *skel, const JsonAnimationClip &srcClip){
 	check(animSeq);
-	animSeq->CleanAnimSequenceForImport();
+	animSeq->GetController().ResetModel();
 	if (!skel){
 		skel = animSeq->GetSkeleton();
 	}
@@ -72,11 +73,17 @@ void AnimationBuilder::buildAnimation(UAnimSequence *animSeq, USkeleton *skel, c
 			frameIndex++;
 		}
 
-		animSeq->AddNewRawTrack(*matCurve.objectName, &rawAnimTrack);
+		//animSeq->AddNewRawTrack(*matCurve.objectName, &rawAnimTrack);
+		animSeq->GetController().AddBoneTrack(*matCurve.objectName);
 	}
+
+	
 
 #if (ENGINE_MAJOR_VERSION >= 4) && (ENGINE_MINOR_VERSION >= 22)
 	animSeq->SetRawNumberOfFrame(numFrames);
+#elif(ENGINE_MAJOR_VERSION == 5)
+	auto FframeRate = FFrameRate(1, 60);
+	animSeq->GetController().SetFrameRate(FframeRate);
 #else
 	animSeq->NumFrames = numFrames;
 #endif

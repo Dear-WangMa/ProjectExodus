@@ -253,8 +253,8 @@ void MaterialBuilder::setTexParam(UMaterialInstanceConstant *matInst, const char
 bool MaterialBuilder::setStaticSwitch(FStaticParameterSet &paramSet, const char *switchName, bool newValue) const{
 	check(switchName);
 	auto name = FName(switchName);
-	for(int i = 0; i < paramSet.StaticSwitchParameters.Num(); i++){
-		auto &cur = paramSet.StaticSwitchParameters[i];
+	for(int i = 0; i < paramSet.EditorOnly.StaticSwitchParameters.Num(); i++){
+		auto &cur = paramSet.EditorOnly.StaticSwitchParameters[i];
 		if (cur.ParameterInfo.Name == switchName){
 			cur.bOverride = true;
 			cur.Value = newValue;
@@ -272,9 +272,9 @@ void printMaterialInstanceData(UMaterialInstanceConstant *matInst, const FString
 	FStaticParameterSet outParams;
 	matInst->GetStaticParameterValues(outParams);
 
-	UE_LOG(JsonLog, Log, TEXT("Num static params: %d"), outParams.StaticSwitchParameters.Num());
-	for(int i = 0; i < outParams.StaticSwitchParameters.Num(); i++){
-		const auto &cur = outParams.StaticSwitchParameters[i];
+	UE_LOG(JsonLog, Log, TEXT("Num static params: %d"), outParams.EditorOnly.StaticSwitchParameters.Num());
+	for(int i = 0; i < outParams.EditorOnly.StaticSwitchParameters.Num(); i++){
+		const auto &cur = outParams.EditorOnly.StaticSwitchParameters[i];
 		auto guidStr = cur.ExpressionGUID.ToString();
 		auto paramName = cur.ParameterInfo.Name.ToString();
 		UE_LOG(JsonLog, Log, TEXT("param %d: override: %d, guid: %s, paramname: %s"),

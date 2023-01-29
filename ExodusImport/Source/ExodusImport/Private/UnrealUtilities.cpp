@@ -201,7 +201,7 @@ void UnrealUtilities::generateStaticMesh(UStaticMesh *mesh, RawMeshFillCallback 
 	srcModel.StaticMeshOwner = mesh;
 #endif
 
-	mesh->LightingGuid = FGuid::NewGuid();
+	mesh->SetLightingGuid(FGuid::NewGuid());
 	mesh->LightMapResolution = 64;///config?`
 	mesh->LightMapCoordinateIndex = 1;
 	if (preConfig)
@@ -249,6 +249,10 @@ FVector2D UnrealUtilities::unityUvToUnreal(const FVector2D& arg){
 	return FVector2D(arg.X, 1.0f - arg.Y);
 }
 
+FVector2f UnrealUtilities::unityUvToUnrealf(const FVector2D& arg) {
+	return FVector2f(arg.X, 1.0f - arg.Y);
+}
+
 FVector UnrealUtilities::unityToUe(const FVector& arg){
 	return FVector(arg.Z, arg.X, arg.Y);
 }
@@ -257,8 +261,16 @@ FVector UnrealUtilities::unityVecToUe(const FVector& arg){
 	return FVector(arg.Z, arg.X, arg.Y);
 }
 
+FVector3f UnrealUtilities::unityVecToUef(const FVector& arg) {
+	return FVector3f(arg.Z, arg.X, arg.Y);
+}
+
 FVector UnrealUtilities::unityPosToUe(const FVector& arg){
 	return unityVecToUe(arg) * 100.0f;
+}
+
+FVector3f UnrealUtilities::unityPosToUef(const FVector& arg) {
+	return unityVecToUef(arg) * 100.0f;
 }
 
 FVector UnrealUtilities::unitySizeToUe(const FVector& arg){

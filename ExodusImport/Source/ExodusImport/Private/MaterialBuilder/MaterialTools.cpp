@@ -133,7 +133,8 @@ UMaterialExpressionConstant* MaterialTools::createConstantExpression(UMaterial *
 		matConstant->SetParameterName(constantName);
 		matConstant->Desc = constantName;
 	}
-	material->Expressions.Add(matConstant);
+	//material->Expressions.Add(matConstant);
+	material->AddExpressionParameter(matConstant, material->GetMaterial()->EditorParameters);
 	matConstant->R = value;
 	return matConstant;
 }
@@ -144,7 +145,8 @@ UMaterialExpression* MaterialTools::createMaterialSingleInput(UMaterial *unrealM
 		matConstant->SetParameterName(inputName);
 		matConstant->Desc = inputName;
 	}
-	unrealMaterial->Expressions.Add(matConstant);
+	//unrealMaterial->Expressions.Add(matConstant);
+	unrealMaterial->AddExpressionParameter(matConstant, unrealMaterial->GetMaterial()->EditorParameters);
 	matConstant->R = value;
 	matInput.Expression = matConstant;
 	return matConstant;
@@ -153,7 +155,8 @@ UMaterialExpression* MaterialTools::createMaterialSingleInput(UMaterial *unrealM
 UMaterialExpressionVectorParameter* MaterialTools::createVectorParameterExpression(UMaterial *material, FLinearColor color, const TCHAR* inputName){
 	UMaterialExpressionVectorParameter* vecExpression = 
 		NewObject<UMaterialExpressionVectorParameter>(material);
-	material->Expressions.Add(vecExpression);
+	//material->Expressions.Add(vecExpression);
+	material->AddExpressionParameter(vecExpression, material->GetMaterial()->EditorParameters);
 
 	//matInput.Expression = vecExpression;
 	vecExpression->DefaultValue.R = color.R;
@@ -170,7 +173,8 @@ UMaterialExpressionVectorParameter* MaterialTools::createVectorParameterExpressi
 UMaterialExpressionVectorParameter* MaterialTools::createVectorParameterExpression(UMaterial *material, const FVector4 &vec, const TCHAR* inputName){
 	UMaterialExpressionVectorParameter* vecExpression = 
 		NewObject<UMaterialExpressionVectorParameter>(material);
-	material->Expressions.Add(vecExpression);
+	//material->Expressions.Add(vecExpression);
+	material->AddExpressionParameter(vecExpression, material->GetMaterial()->EditorParameters);
 
 	//matInput.Expression = vecExpression;
 	vecExpression->DefaultValue.R = vec.X;
@@ -213,7 +217,8 @@ UMaterialExpressionTextureSample* MaterialTools::createTextureExpression(UMateri
 	}
 	result = NewObject<UMaterialExpressionTextureSample>(material);
 	result->SamplerType = normalMap ? SAMPLERTYPE_Normal: SAMPLERTYPE_Color;
-	material->Expressions.Add(result);
+	//material->Expressions.Add(result);
+	material->AddExpressionParameter(result, material->GetMaterial()->EditorParameters);
 	result->Texture = unrealTex;
 
 	if (inputName){
@@ -273,7 +278,8 @@ UMaterialExpression* MaterialTools::createMaterialInput(UMaterial *unrealMateria
 	if (texture){
 		UE_LOG(JsonLog, Log, TEXT("Texture found"));
 		auto texExpression = NewObject<UMaterialExpressionTextureSample>(unrealMaterial);
-		unrealMaterial->Expressions.Add(texExpression);
+		//unrealMaterial->Expressions.Add(texExpression);
+		unrealMaterial->AddExpressionParameter(texExpression, unrealMaterial->GetMaterial()->EditorParameters);
 		matInput.Expression = texExpression;
 		texExpression->Texture = texture;
 		texExpression->SamplerType = normalMap ? SAMPLERTYPE_Normal: SAMPLERTYPE_Color;
@@ -290,7 +296,8 @@ UMaterialExpression* MaterialTools::createMaterialInput(UMaterial *unrealMateria
 		if (matColor){
 			UE_LOG(JsonLog, Log, TEXT("Trying to create color node"));
 			auto vecExpression = NewObject<UMaterialExpressionVectorParameter>(unrealMaterial);
-			unrealMaterial->Expressions.Add(vecExpression);
+			//unrealMaterial->Expressions.Add(vecExpression);
+			unrealMaterial->AddExpressionParameter(vecExpression, unrealMaterial->GetMaterial()->EditorParameters);
 			matInput.Expression = vecExpression;
 			vecExpression->DefaultValue.R = matColor->R;
 			vecExpression->DefaultValue.G = matColor->G;
@@ -394,7 +401,7 @@ void MaterialTools::arrangeMaterialNodesAsTree(UMaterial* material){
 
 	//UE_LOG(JsonLogMatNodeSort, Log, TEXT("Sorting expressions"));
 	//calculate connection chain
-	for(auto curExpr: material->Expressions){
+	for(auto curExpr: material->GetExpressions()){
 		auto inputs = curExpr->GetInputs();
 		for(auto curInput: inputs){
 			if (!curInput || !curInput->Expression)
@@ -407,7 +414,7 @@ void MaterialTools::arrangeMaterialNodesAsTree(UMaterial* material){
 	TSet<UMaterialExpression*> topLevel;
 	//find top level ones
 	//UE_LOG(JsonLogMatNodeSort, Log, TEXT("Gathering top level nodes"));
-	for(auto curExpr: material->Expressions){
+	for(auto curExpr: material->GetExpressions()){
 		if (!srcToDst.Contains(curExpr))
 			topLevel.Add(curExpr);
 	}
@@ -586,13 +593,13 @@ void MaterialTools::arrangeMaterialNodesAsTree(UMaterial* material){
 }
 
 void MaterialTools::arrangeMaterialNodesAsGrid(UMaterial* material){
-	auto numExpressions = material->Expressions.Num();
+	auto numExpressions = material->GetExpressions().Num();
 	int expressionRows = (int)(sqrtf((float)numExpressions))+1;
 	if (expressionRows == 0)
 		return;
 
 	for (int i = 0; i < numExpressions; i++){
-		auto cur = material->Expressions[i];
+		auto cur = material->GetExpressions()[i];
 		auto row = i / expressionRows;
 		auto col = i % expressionRows;
 

@@ -28,7 +28,7 @@ void MeshBuilder::setupStaticMesh(UStaticMesh *mesh, const JsonMesh &jsonMesh, s
 	srcModel.StaticMeshOwner = mesh;
 #endif
 
-	mesh->LightingGuid = FGuid::NewGuid();
+	mesh->SetLightingGuid(FGuid::NewGuid());
 	mesh->LightMapResolution = 64;
 	mesh->LightMapCoordinateIndex = 1;
 
@@ -48,7 +48,7 @@ void MeshBuilder::setupStaticMesh(UStaticMesh *mesh, const JsonMesh &jsonMesh, s
 		UE_LOG(JsonLog, Log, TEXT("Num vert floats: %d"), jsonMesh.verts.Num());//vertFloats.Num());
 		for(int i = 0; (i + 2) < jsonMesh.verts.Num(); i += 3){
 			FVector unityPos(jsonMesh.verts[i], jsonMesh.verts[i+1], jsonMesh.verts[i+2]);
-			newRawMesh.VertexPositions.Add(unityPosToUe(unityPos));
+			newRawMesh.VertexPositions.Add(unityPosToUef(unityPos));
 		}
 		UE_LOG(JsonLog, Log, TEXT("Num verts: %d"), newRawMesh.VertexPositions.Num());
 
@@ -98,11 +98,11 @@ void MeshBuilder::setupStaticMesh(UStaticMesh *mesh, const JsonMesh &jsonMesh, s
 
 					processTangent(origIndex, jsonMesh.normals, jsonMesh.tangents, hasNormals, hasTangents, 
 						[&](const auto& norm){
-							newRawMesh.WedgeTangentZ.Add(norm);
+							newRawMesh.WedgeTangentZ.Add((FVector3f)norm);
 						},
 						[&](const auto &tanU, const auto &tanV){
-							newRawMesh.WedgeTangentX.Add(tanU);
-							newRawMesh.WedgeTangentY.Add(tanV);
+							newRawMesh.WedgeTangentX.Add((FVector3f)tanU);
+							newRawMesh.WedgeTangentY.Add((FVector3f)tanV);
 						}
 					);
 
@@ -111,12 +111,12 @@ void MeshBuilder::setupStaticMesh(UStaticMesh *mesh, const JsonMesh &jsonMesh, s
 							if (uvIndex != 0)
 								continue;
 							auto tmpPos = getIdxVector3(jsonMesh.verts, origIndex);
-							FVector2D tmpUv(tmpPos.X, tmpPos.Y);
+							FVector2f tmpUv(tmpPos.X, tmpPos.Y);
 							newRawMesh.WedgeTexCoords[uvIndex].Add(tmpUv);
 							continue;
 						}
 
-						auto tmpUv = getIdxVector2(*uvFloats[uvIndex], origIndex);
+						auto tmpUv = (FVector2f)getIdxVector2(*uvFloats[uvIndex], origIndex);
 						tmpUv.Y = 1.0f - tmpUv.Y;
 						newRawMesh.WedgeTexCoords[uvIndex].Add(tmpUv);
 					}
@@ -170,7 +170,7 @@ void MeshBuilder::setupStaticMesh(UStaticMesh *mesh, const JsonMesh &jsonMesh, s
 	}
 
 	if (materialSetup){
-		materialSetup(mesh->StaticMaterials);
+		materialSetup(mesh->GetStaticMaterials());
 	}
 
 	srcModel.RawMeshBulkData->SaveRawMesh(newRawMesh);
@@ -192,7 +192,7 @@ void MeshBuilder::setupStaticMesh(UStaticMesh *mesh, const JsonMesh &jsonMesh, s
 		TArray<FVector> verts(KDopDir18, 18);
 		GenerateKDopAsSimpleCollision(mesh, verts);
 
-		UBodySetup* bodySetup = mesh->BodySetup;
+		UBodySetup* bodySetup = mesh->GetBodySetup();
 		if (!bodySetup || (bodySetup && (bodySetup->AggGeom.GetElementCount() == 0))){
 			UE_LOG(JsonLog, Warning, TEXT("Could not generate convex collision for mesh %d(\"%s\"):\nRebuilding as a box."), (int)jsonMesh.id, *jsonMesh.name);
 			GenerateBoxAsSimpleCollision(mesh);

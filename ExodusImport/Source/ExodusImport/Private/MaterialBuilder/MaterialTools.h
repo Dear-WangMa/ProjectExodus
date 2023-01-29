@@ -96,7 +96,7 @@ namespace MaterialTools{
 
 	template<typename Exp> Exp* createExpression(UMaterial *material, const TCHAR* name = 0){
 		Exp* result = NewObject<Exp>(material);
-		material->Expressions.Add(result);
+		material->AddExpressionParameter(result,material->GetMaterial()->EditorParameters);
 		if (name){
 			result->Desc = FString(name);
 			UMaterialExpressionParameter *paramNode = Cast<UMaterialExpressionParameter>(result);

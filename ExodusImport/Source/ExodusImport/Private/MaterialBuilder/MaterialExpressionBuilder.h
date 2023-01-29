@@ -114,7 +114,7 @@ public:
 	template<typename Exp> Exp* expr(const TCHAR* name = nullptr){
 		checkf(material != nullptr, TEXT("Expression builder used without material. Call begin() first"));
 		Exp* result = NewObject<Exp>(material);
-		material->Expressions.Add(result);
+		material->AddExpressionParameter(result, material->GetMaterial()->EditorParameters);
 		if (name){
 			result->Desc = FString(name);
 		}

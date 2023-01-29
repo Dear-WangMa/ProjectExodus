@@ -52,10 +52,13 @@ namespace UnrealUtilities{
 	float unityDistanceToUe(const float arg);
 	FVector unityVecToUe(const FVector& arg);
 	FVector unityPosToUe(const FVector& arg);
+	FVector3f unityVecToUef(const FVector& arg);
+	FVector3f unityPosToUef(const FVector& arg);
 	FVector unitySizeToUe(const FVector& arg);
 	FMatrix unityWorldToUe(const FMatrix &unityMatrix);
 	FMatrix unityWorldToUe(const FMatrix &unityMatrix, const FVector &localPositionOffset);
 	FVector2D unityUvToUnreal(const FVector2D& arg);
+	FVector2f unityUvToUnrealf(const FVector2D& arg);
 
 	FVector4 getIdxVector4(const TArray<float>& floats, int32 idx);
 	FVector2D getIdxVector2(const TArray<float>& floats, int32 idx);

@@ -66,7 +66,8 @@ void MaterialBuilder::createBillboardTransformNodes(UMaterial *material){
 
 	auto worldOffset = b.sub(adjustedPos, worldPos);
 
-	material->WorldPositionOffset.Expression = worldOffset;
+	//material->WorldPositionOffset.Expression = worldOffset;
+	material->GetEditorOnlyData()->WorldPositionOffset.Expression = worldOffset;
 	//auto xScale = 
 }
 
@@ -78,7 +79,7 @@ void MaterialBuilder::fillBillboardMaterial(UMaterial* material, const JsonTerra
 	check(terrainBuilder);
 
 	material->BlendMode = BLEND_Masked;
-	auto &opacityTarget = material->OpacityMask;
+	auto &opacityTarget = material->GetEditorOnlyData()->OpacityMask;
 
 	auto importer = terrainBuilder->getImporter();
 	auto texId = detailPrototype->textureId;
@@ -96,11 +97,11 @@ void MaterialBuilder::fillBillboardMaterial(UMaterial* material, const JsonTerra
 	//detailPrototype->healthyColor;
 	//detailPrototype->dryColor;
 
-	material->BaseColor.Expression = mul;
-	material->OpacityMask.Expression = alpha;
+	material->GetEditorOnlyData()->BaseColor.Expression = mul;
+	material->GetEditorOnlyData()->OpacityMask.Expression = alpha;
 
-	material->BaseColor.Expression = mul;
-	material->OpacityMask.Expression = alpha;
+	material->GetEditorOnlyData()->BaseColor.Expression = mul;
+	material->GetEditorOnlyData()->OpacityMask.Expression = alpha;
 
 	material->bUsedWithInstancedStaticMeshes = true;
 

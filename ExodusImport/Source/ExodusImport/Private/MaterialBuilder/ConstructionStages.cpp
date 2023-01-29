@@ -161,7 +161,7 @@ void MaterialBuilder::processAlbedo(UMaterial* material, const JsonMaterial &jso
 		}
 	}
 
-	material->BaseColor.Expression = buildData.albedoExpression;
+	material->GetEditorOnlyData()->BaseColor.Expression = buildData.albedoExpression;
 }
 
 void MaterialBuilder::processNormalMap(UMaterial* material, const JsonMaterial &jsonMat, const MaterialFingerprint &fingerprint, MaterialBuildData &buildData){
@@ -208,7 +208,7 @@ void MaterialBuilder::processNormalMap(UMaterial* material, const JsonMaterial &
 	}
 
 	if (buildData.normalExpression){
-		material->Normal.Expression = buildData.normalExpression;
+		material->GetEditorOnlyData()->Normal.Expression = buildData.normalExpression;
 	}
 }
 
@@ -231,7 +231,7 @@ void MaterialBuilder::processEmissive(UMaterial* material, const JsonMaterial &j
 		emissiveExpr = mul;
 	}
 
-	material->EmissiveColor.Expression = emissiveExpr;
+	material->GetEditorOnlyData()->EmissiveColor.Expression = emissiveExpr;
 }
 
 void MaterialBuilder::processDetailMask(UMaterial* material, const JsonMaterial &jsonMat, const MaterialFingerprint &fingerprint, MaterialBuildData &buildData){
@@ -269,7 +269,7 @@ void MaterialBuilder::processOcclusion(UMaterial* material, const JsonMaterial &
 	if (!occlusionExpr)
 		return;
 
-	material->AmbientOcclusion.Expression = occlusionExpr;
+	material->GetEditorOnlyData()->AmbientOcclusion.Expression = occlusionExpr;
 }
 
 void MaterialBuilder::processMetallic(UMaterial* material, const JsonMaterial &jsonMat, const MaterialFingerprint &fingerprint, MaterialBuildData &buildData){
@@ -291,7 +291,7 @@ void MaterialBuilder::processMetallic(UMaterial* material, const JsonMaterial &j
 		metallicExpr = metalParam;
 	}
 
-	material->Metallic.Expression = metallicExpr;
+	material->GetEditorOnlyData()->Metallic.Expression = metallicExpr;
 }
 
 void MaterialBuilder::processSpecular(UMaterial* material, const JsonMaterial &jsonMat, const MaterialFingerprint &fingerprint, MaterialBuildData &buildData){
@@ -346,8 +346,8 @@ void MaterialBuilder::processSpecular(UMaterial* material, const JsonMaterial &j
 		lerp->A.Expression = buildData.albedoExpression;
 		lerp->B.Expression = buildData.specularExpression;
 
-		material->BaseColor.Expression = lerp;
-		material->Metallic.Expression = metal;
+		material->GetEditorOnlyData()->BaseColor.Expression = lerp;
+		material->GetEditorOnlyData()->Metallic.Expression = metal;
 	}
 
 	//material->Specular.Expression = specExpr;
@@ -375,7 +375,7 @@ void MaterialBuilder::processRoughness(UMaterial* material, const JsonMaterial &
 		roughExpr = lerp;
 	}
 
-	material->Roughness.Expression = roughExpr;
+	material->GetEditorOnlyData()->Roughness.Expression = roughExpr;
 }
 
 #ifndef MATBUILDER_OLDGEN
@@ -437,7 +437,7 @@ void MaterialBuilder::processOpacity(UMaterial* material, const JsonMaterial &js
 		material->TranslucencyLightingMode = TLM_SurfacePerPixelLighting;//TLM_Surface;
 	}
 
-	auto &opacityTarget = jsonMat.isTransparentQueue() ? material->Opacity: material->OpacityMask;
+	auto &opacityTarget = jsonMat.isTransparentQueue() ? material->GetEditorOnlyData()->Opacity: material->GetEditorOnlyData()->OpacityMask;
 
 	auto albedoTexExpression = buildData.albedoTexExpression;
 	auto albedoColorExpression = buildData.albedoColorExpression;

@@ -229,6 +229,8 @@ void TerrainBuilder::processFoliageTreeActors(ALandscape *landscape){
 	*/
 #if (ENGINE_MAJOR_VERSION == 4) && (ENGINE_MINOR_VERSION >= 23)
 	TMap<int32, FFoliageInfo*> foliageMeshInfos;
+#elif(ENGINE_MAJOR_VERSION == 5)
+	TMap<int32, FFoliageInfo*> foliageMeshInfos;
 #else
 	TMap<int32, FFoliageMeshInfo*> foliageMeshInfos;
 #endif
@@ -279,7 +281,7 @@ void TerrainBuilder::processFoliageTreeActors(ALandscape *landscape){
 
 		FFoliageInstance dstInst;
 
-		auto scale = FVector(srcInst.widthScale, srcInst.widthScale, srcInst.heightScale);
+		auto scale = FVector3f(srcInst.widthScale, srcInst.widthScale, srcInst.heightScale);
 
 		dstInst.DrawScale3D = scale * 0.1f; //??why??
 
@@ -289,6 +291,9 @@ void TerrainBuilder::processFoliageTreeActors(ALandscape *landscape){
 		dstInst.Location = treePos;//unityPosToUe(treePos);
 #if (ENGINE_MAJOR_VERSION == 4) && (ENGINE_MINOR_VERSION >= 23)
 		meshInfo->AddInstance(ifa, foliageType, dstInst);
+#elif(ENGINE_MAJOR_VERSION == 5)
+		meshInfo->AddInstance(foliageType, dstInst);
+		//meshInfo->AddInstance(ifa, foliageType, dstInst);
 #else
 		meshInfo->AddInstance(ifa, foliageType, dstInst, true);
 #endif
@@ -326,6 +331,9 @@ ALandscape* TerrainBuilder::buildTerrain(){
 
 	//normal layers
 #if (ENGINE_MAJOR_VERSION == 4) && (ENGINE_MINOR_VERSION >= 23)
+	TMap<FGuid, TArray<FLandscapeImportLayerInfo>> importLayerMap;
+	auto& importLayers = importLayerMap.Add(FGuid());
+#elif (ENGINE_MAJOR_VERSION == 5)
 	TMap<FGuid, TArray<FLandscapeImportLayerInfo>> importLayerMap;
 	auto& importLayers = importLayerMap.Add(FGuid());
 #else
@@ -434,6 +442,13 @@ ALandscape* TerrainBuilder::buildTerrain(){
 	landProxy->LandscapeHoleMaterial = terrainMaterial;
 
 #if (ENGINE_MAJOR_VERSION == 4) && (ENGINE_MINOR_VERSION >= 23)
+	TMap<FGuid, TArray<uint16>> heightLayerData;
+	heightLayerData.Add(FGuid(), heightMapData.getArray());//Ouch. Need optimization, excessive copying here.
+	landProxy->Import(FGuid::NewGuid(),
+		0, 0, xSize - 1, ySize - 1, sectionsPerComp, quadsPerSection,
+		heightLayerData, TEXT(""),
+		importLayerMap, ELandscapeImportAlphamapType::Additive);
+#elif (ENGINE_MAJOR_VERSION == 5)
 	TMap<FGuid, TArray<uint16>> heightLayerData;
 	heightLayerData.Add(FGuid(), heightMapData.getArray());//Ouch. Need optimization, excessive copying here.
 	landProxy->Import(FGuid::NewGuid(),
